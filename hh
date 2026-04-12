@@ -1,662 +1,657 @@
--- ╔══════════════════════════════════════════════╗
--- ║         OG-Sniper Script - Full UI           ║
--- ║         Made for Roblox Executor             ║
--- ╚══════════════════════════════════════════════╝
-
--- ══════════════════════════════════════
---         FUNCTIONS (ضع هنا)
--- ══════════════════════════════════════
-
 local function OGSniper_045()
-	-- OG-Sniper with 0.45 AimDelay
 	print("OG Sniper 0.45 Activated")
 end
 
 local function OGSniper_065()
-	-- OG-Sniper with 0.65 AimDelay
 	print("OG Sniper 0.65 Activated")
 end
 
 local function NEWSniper_045()
-	-- NEW-Sniper with better view with 0.45 AimDelay
 	print("NEW Sniper 0.45 Activated")
 end
 
 local function NEWSniper_065()
-	-- NEW-Sniper with better view with 0.65 AimDelay
 	print("NEW Sniper 0.65 Activated")
 end
 
 -- ══════════════════════════════════════
---             UI BUILDER
+--             SERVICES
 -- ══════════════════════════════════════
 
-local Players       = game:GetService("Players")
-local TweenService  = game:GetService("TweenService")
-local RunService    = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
+local Players           = game:GetService("Players")
+local TweenService      = game:GetService("TweenService")
+local UserInputService  = game:GetService("UserInputService")
 
-local LocalPlayer   = Players.LocalPlayer
-local PlayerGui     = LocalPlayer:WaitForChild("PlayerGui")
+local LocalPlayer  = Players.LocalPlayer
+local PlayerGui    = LocalPlayer:WaitForChild("PlayerGui")
 
--- Remove old UI if exists
-local oldGui = PlayerGui:FindFirstChild("OGSniperUI")
-if oldGui then oldGui:Destroy() end
+-- Remove old UI
+local old = PlayerGui:FindFirstChild("OGSniperUI")
+if old then old:Destroy() end
 
--- ── MAIN GUI ──────────────────────────────────────────────────────────────────
+-- ══════════════════════════════════════
+--          SCREEN SIZE HELPER
+-- ══════════════════════════════════════
+
+local function getScreenSize()
+	local cam = workspace.CurrentCamera
+	return cam and cam.ViewportSize or Vector2.new(800, 600)
+end
+
+local screen    = getScreenSize()
+local isPhone   = screen.X < 600 or screen.Y < 700
+
+-- UI dimensions - compact & balanced for mobile
+local UI_W      = isPhone and math.min(screen.X - 20, 460) or 660
+local UI_H      = isPhone and math.min(screen.Y - 60, 500) or 520
+local SIDE_W    = isPhone and 110 or 140
+local TOP_H     = 46
+local CARD_H    = isPhone and 170 or 180
+
+-- ══════════════════════════════════════
+--           MAIN GUI
+-- ══════════════════════════════════════
+
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name             = "OGSniperUI"
-ScreenGui.ZIndexBehavior   = Enum.ZIndexBehavior.Sibling
-ScreenGui.ResetOnSpawn     = false
-ScreenGui.IgnoreGuiInset   = true
-ScreenGui.Parent           = PlayerGui
+ScreenGui.Name           = "OGSniperUI"
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.ResetOnSpawn   = false
+ScreenGui.IgnoreGuiInset = true
+ScreenGui.Parent         = PlayerGui
 
--- ── MAIN FRAME ────────────────────────────────────────────────────────────────
 local Main = Instance.new("Frame")
-Main.Name              = "Main"
-Main.Size              = UDim2.new(0, 700, 0, 540)
-Main.Position          = UDim2.new(0.5, -350, 0.5, -270)
-Main.BackgroundColor3  = Color3.fromRGB(10, 10, 14)
-Main.BorderSizePixel   = 0
-Main.ClipsDescendants  = true
-Main.Parent            = ScreenGui
-
--- Start hidden for animation
-Main.AnchorPoint = Vector2.new(0.5, 0.5)
-Main.Position    = UDim2.new(0.5, 0, 0.5, 0)
-Main.Size        = UDim2.new(0, 0, 0, 0)
+Main.Name                  = "Main"
+Main.AnchorPoint           = Vector2.new(0.5, 0.5)
+Main.Position              = UDim2.new(0.5, 0, 0.5, 0)
+Main.Size                  = UDim2.new(0, 0, 0, 0)
+Main.BackgroundColor3      = Color3.fromRGB(10, 10, 15)
 Main.BackgroundTransparency = 1
+Main.BorderSizePixel       = 0
+Main.ClipsDescendants      = true
+Main.Parent                = ScreenGui
 
 local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 12)
+MainCorner.CornerRadius = UDim.new(0, 11)
 MainCorner.Parent = Main
 
--- Subtle border glow
 local MainStroke = Instance.new("UIStroke")
-MainStroke.Color     = Color3.fromRGB(80, 80, 110)
-MainStroke.Thickness = 1.2
-MainStroke.Transparency = 0.5
+MainStroke.Color       = Color3.fromRGB(55, 55, 80)
+MainStroke.Thickness   = 1
 MainStroke.Parent = Main
 
--- ── TOPBAR ────────────────────────────────────────────────────────────────────
+-- ══════════════════════════════════════
+--             TOPBAR
+-- ══════════════════════════════════════
+
 local TopBar = Instance.new("Frame")
-TopBar.Name             = "TopBar"
-TopBar.Size             = UDim2.new(1, 0, 0, 52)
-TopBar.Position         = UDim2.new(0, 0, 0, 0)
-TopBar.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
+TopBar.Size             = UDim2.new(1, 0, 0, TOP_H)
+TopBar.BackgroundColor3 = Color3.fromRGB(14, 14, 20)
 TopBar.BorderSizePixel  = 0
 TopBar.ZIndex           = 3
 TopBar.Parent           = Main
 
-local TopBarCorner = Instance.new("UICorner")
-TopBarCorner.CornerRadius = UDim.new(0, 12)
-TopBarCorner.Parent = TopBar
+local TBCorner = Instance.new("UICorner")
+TBCorner.CornerRadius = UDim.new(0, 11)
+TBCorner.Parent = TopBar
 
--- Fix bottom corners of topbar
-local TopBarFix = Instance.new("Frame")
-TopBarFix.Size             = UDim2.new(1, 0, 0, 12)
-TopBarFix.Position         = UDim2.new(0, 0, 1, -12)
-TopBarFix.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
-TopBarFix.BorderSizePixel  = 0
-TopBarFix.ZIndex           = 3
-TopBarFix.Parent           = TopBar
+local TBFix = Instance.new("Frame")
+TBFix.Size             = UDim2.new(1, 0, 0, 11)
+TBFix.Position         = UDim2.new(0, 0, 1, -11)
+TBFix.BackgroundColor3 = Color3.fromRGB(14, 14, 20)
+TBFix.BorderSizePixel  = 0
+TBFix.ZIndex           = 3
+TBFix.Parent           = TopBar
 
--- Accent line under topbar
-local AccentLine = Instance.new("Frame")
-AccentLine.Size             = UDim2.new(1, 0, 0, 2)
-AccentLine.Position         = UDim2.new(0, 0, 1, 0)
-AccentLine.BackgroundColor3 = Color3.fromRGB(100, 100, 255)
-AccentLine.BorderSizePixel  = 0
-AccentLine.ZIndex           = 4
-AccentLine.Parent           = TopBar
+-- Accent line
+local AccLine = Instance.new("Frame")
+AccLine.Size             = UDim2.new(1, 0, 0, 2)
+AccLine.Position         = UDim2.new(0, 0, 1, 0)
+AccLine.BackgroundColor3 = Color3.fromRGB(90, 70, 200)
+AccLine.BorderSizePixel  = 0
+AccLine.ZIndex           = 4
+AccLine.Parent           = TopBar
 
-local AccentGrad = Instance.new("UIGradient")
-AccentGrad.Color = ColorSequence.new({
-	ColorSequenceKeypoint.new(0,   Color3.fromRGB(80, 80, 220)),
-	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(140, 100, 255)),
-	ColorSequenceKeypoint.new(1,   Color3.fromRGB(80, 80, 220)),
+local AccGrad = Instance.new("UIGradient")
+AccGrad.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0,   Color3.fromRGB(70,  70, 200)),
+	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(130, 90, 255)),
+	ColorSequenceKeypoint.new(1,   Color3.fromRGB(70,  70, 200)),
 })
-AccentGrad.Parent = AccentLine
+AccGrad.Parent = AccLine
 
 -- Title
-local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Name               = "Title"
-TitleLabel.Size               = UDim2.new(1, -130, 1, 0)
-TitleLabel.Position           = UDim2.new(0, 18, 0, 0)
-TitleLabel.BackgroundTransparency = 1
-TitleLabel.Text               = "OG-Sniper Script"
-TitleLabel.TextColor3         = Color3.fromRGB(240, 240, 255)
-TitleLabel.TextSize           = 17
-TitleLabel.Font               = Enum.Font.GothamBold
-TitleLabel.TextXAlignment     = Enum.TextXAlignment.Left
-TitleLabel.ZIndex             = 4
-TitleLabel.Parent             = TopBar
+local TitleLbl = Instance.new("TextLabel")
+TitleLbl.Size             = UDim2.new(1, -100, 1, 0)
+TitleLbl.Position         = UDim2.new(0, 14, 0, 0)
+TitleLbl.BackgroundTransparency = 1
+TitleLbl.Text             = "OG-Sniper Script"
+TitleLbl.TextColor3       = Color3.fromRGB(235, 235, 255)
+TitleLbl.TextSize         = isPhone and 14 or 16
+TitleLbl.Font             = Enum.Font.GothamBold
+TitleLbl.TextXAlignment   = Enum.TextXAlignment.Left
+TitleLbl.ZIndex           = 4
+TitleLbl.Parent           = TopBar
 
 -- Version badge
-local VerBadge = Instance.new("Frame")
-VerBadge.Size             = UDim2.new(0, 38, 0, 18)
-VerBadge.Position         = UDim2.new(0, 205, 0.5, -9)
-VerBadge.BackgroundColor3 = Color3.fromRGB(90, 70, 200)
-VerBadge.BorderSizePixel  = 0
-VerBadge.ZIndex           = 5
-VerBadge.Parent           = TopBar
+local VerBg = Instance.new("Frame")
+VerBg.Size             = UDim2.new(0, 34, 0, 16)
+VerBg.Position         = UDim2.new(0, isPhone and 155 or 186, 0.5, -8)
+VerBg.BackgroundColor3 = Color3.fromRGB(75, 55, 180)
+VerBg.BorderSizePixel  = 0
+VerBg.ZIndex           = 5
+VerBg.Parent           = TopBar
 
-local VerBadgeCorner = Instance.new("UICorner")
-VerBadgeCorner.CornerRadius = UDim.new(1, 0)
-VerBadgeCorner.Parent = VerBadge
+local VerBgC = Instance.new("UICorner")
+VerBgC.CornerRadius = UDim.new(1, 0)
+VerBgC.Parent = VerBg
 
-local VerText = Instance.new("TextLabel")
-VerText.Size             = UDim2.new(1, 0, 1, 0)
-VerText.BackgroundTransparency = 1
-VerText.Text             = "v2.0"
-VerText.TextColor3       = Color3.fromRGB(255, 255, 255)
-VerText.TextSize         = 10
-VerText.Font             = Enum.Font.GothamBold
-VerText.TextXAlignment   = Enum.TextXAlignment.Center
-VerText.ZIndex           = 6
-VerText.Parent           = VerBadge
+local VerTxt = Instance.new("TextLabel")
+VerTxt.Size             = UDim2.new(1, 0, 1, 0)
+VerTxt.BackgroundTransparency = 1
+VerTxt.Text             = "v2.0"
+VerTxt.TextColor3       = Color3.fromRGB(220, 210, 255)
+VerTxt.TextSize         = 9
+VerTxt.Font             = Enum.Font.GothamBold
+VerTxt.ZIndex           = 6
+VerTxt.Parent           = VerBg
 
--- Close Button
-local CloseBtn = Instance.new("TextButton")
-CloseBtn.Name             = "CloseBtn"
-CloseBtn.Size             = UDim2.new(0, 30, 0, 30)
-CloseBtn.Position         = UDim2.new(1, -44, 0.5, -15)
-CloseBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 60)
-CloseBtn.Text             = "✕"
-CloseBtn.TextColor3       = Color3.fromRGB(255, 255, 255)
-CloseBtn.TextSize         = 13
-CloseBtn.Font             = Enum.Font.GothamBold
-CloseBtn.BorderSizePixel  = 0
-CloseBtn.ZIndex           = 5
-CloseBtn.Parent           = TopBar
-
-local CloseBtnCorner = Instance.new("UICorner")
-CloseBtnCorner.CornerRadius = UDim.new(0, 8)
-CloseBtnCorner.Parent = CloseBtn
-
--- Minimize Button
+-- Minimize button
 local MinBtn = Instance.new("TextButton")
-MinBtn.Name             = "MinBtn"
-MinBtn.Size             = UDim2.new(0, 30, 0, 30)
-MinBtn.Position         = UDim2.new(1, -80, 0.5, -15)
-MinBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
-MinBtn.Text             = "─"
-MinBtn.TextColor3       = Color3.fromRGB(180, 180, 200)
-MinBtn.TextSize         = 13
+MinBtn.Size             = UDim2.new(0, 28, 0, 28)
+MinBtn.Position         = UDim2.new(1, -66, 0.5, -14)
+MinBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 42)
+MinBtn.Text             = "—"
+MinBtn.TextColor3       = Color3.fromRGB(160, 160, 190)
+MinBtn.TextSize         = 11
 MinBtn.Font             = Enum.Font.GothamBold
 MinBtn.BorderSizePixel  = 0
 MinBtn.ZIndex           = 5
 MinBtn.Parent           = TopBar
 
-local MinBtnCorner = Instance.new("UICorner")
-MinBtnCorner.CornerRadius = UDim.new(0, 8)
-MinBtnCorner.Parent = MinBtn
+local MinBtnC = Instance.new("UICorner")
+MinBtnC.CornerRadius = UDim.new(0, 7)
+MinBtnC.Parent = MinBtn
 
--- ── SIDEBAR ───────────────────────────────────────────────────────────────────
+-- Close button
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size             = UDim2.new(0, 28, 0, 28)
+CloseBtn.Position         = UDim2.new(1, -34, 0.5, -14)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(185, 45, 55)
+CloseBtn.Text             = "✕"
+CloseBtn.TextColor3       = Color3.fromRGB(255, 255, 255)
+CloseBtn.TextSize         = 11
+CloseBtn.Font             = Enum.Font.GothamBold
+CloseBtn.BorderSizePixel  = 0
+CloseBtn.ZIndex           = 5
+CloseBtn.Parent           = TopBar
+
+local CloseBtnC = Instance.new("UICorner")
+CloseBtnC.CornerRadius = UDim.new(0, 7)
+CloseBtnC.Parent = CloseBtn
+
+-- ══════════════════════════════════════
+--             SIDEBAR
+-- ══════════════════════════════════════
+
 local Sidebar = Instance.new("Frame")
-Sidebar.Name             = "Sidebar"
-Sidebar.Size             = UDim2.new(0, 160, 1, -52)
-Sidebar.Position         = UDim2.new(0, 0, 0, 52)
-Sidebar.BackgroundColor3 = Color3.fromRGB(13, 13, 18)
+Sidebar.Size             = UDim2.new(0, SIDE_W, 1, -TOP_H)
+Sidebar.Position         = UDim2.new(0, 0, 0, TOP_H)
+Sidebar.BackgroundColor3 = Color3.fromRGB(12, 12, 17)
 Sidebar.BorderSizePixel  = 0
 Sidebar.ZIndex           = 2
 Sidebar.Parent           = Main
 
--- Sidebar divider
 local SideDiv = Instance.new("Frame")
 SideDiv.Size             = UDim2.new(0, 1, 1, 0)
 SideDiv.Position         = UDim2.new(1, 0, 0, 0)
-SideDiv.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+SideDiv.BackgroundColor3 = Color3.fromRGB(35, 35, 55)
 SideDiv.BorderSizePixel  = 0
 SideDiv.ZIndex           = 3
 SideDiv.Parent           = Sidebar
 
--- Player Avatar
-local AvatarFrame = Instance.new("Frame")
-AvatarFrame.Size             = UDim2.new(0, 56, 0, 56)
-AvatarFrame.Position         = UDim2.new(0.5, -28, 0, 18)
-AvatarFrame.BackgroundColor3 = Color3.fromRGB(100, 80, 220)
-AvatarFrame.BorderSizePixel  = 0
-AvatarFrame.ZIndex           = 3
-AvatarFrame.Parent           = Sidebar
+-- ── Player info (small, bottom-left style, compact) ──
 
-local AvatarCorner = Instance.new("UICorner")
-AvatarCorner.CornerRadius = UDim.new(1, 0)
-AvatarCorner.Parent = AvatarFrame
+-- Avatar (small)
+local AvatarF = Instance.new("Frame")
+AvatarF.Size             = UDim2.new(0, 38, 0, 38)
+AvatarF.Position         = UDim2.new(0.5, -19, 0, 14)
+AvatarF.BackgroundColor3 = Color3.fromRGB(80, 60, 180)
+AvatarF.BorderSizePixel  = 0
+AvatarF.ZIndex           = 3
+AvatarF.Parent           = Sidebar
+
+local AvatarFC = Instance.new("UICorner")
+AvatarFC.CornerRadius = UDim.new(1, 0)
+AvatarFC.Parent = AvatarF
 
 local AvatarStroke = Instance.new("UIStroke")
-AvatarStroke.Color     = Color3.fromRGB(120, 100, 255)
-AvatarStroke.Thickness = 2
-AvatarStroke.Parent = AvatarFrame
+AvatarStroke.Color     = Color3.fromRGB(100, 80, 220)
+AvatarStroke.Thickness = 1.5
+AvatarStroke.Parent = AvatarF
 
--- Load avatar image
 local AvatarImg = Instance.new("ImageLabel")
 AvatarImg.Size             = UDim2.new(1, 0, 1, 0)
 AvatarImg.BackgroundTransparency = 1
 AvatarImg.ZIndex           = 4
-AvatarImg.Parent           = AvatarFrame
+AvatarImg.Parent           = AvatarF
 
-local AvatarImgCorner = Instance.new("UICorner")
-AvatarImgCorner.CornerRadius = UDim.new(1, 0)
-AvatarImgCorner.Parent = AvatarImg
+local AvatarImgC = Instance.new("UICorner")
+AvatarImgC.CornerRadius = UDim.new(1, 0)
+AvatarImgC.Parent = AvatarImg
 
--- Load player thumbnail
-local userId = LocalPlayer.UserId
-local thumbType = Enum.ThumbnailType.HeadShot
-local thumbSize = Enum.ThumbnailSize.Size100x100
-local content, isReady = Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
-AvatarImg.Image = content
+local ok, content = pcall(function()
+	return Players:GetUserThumbnailAsync(
+		LocalPlayer.UserId,
+		Enum.ThumbnailType.HeadShot,
+		Enum.ThumbnailSize.Size100x100
+	)
+end)
+if ok then AvatarImg.Image = content end
 
--- Player name label
-local PlayerNameLabel = Instance.new("TextLabel")
-PlayerNameLabel.Size             = UDim2.new(1, -10, 0, 22)
-PlayerNameLabel.Position         = UDim2.new(0, 5, 0, 82)
-PlayerNameLabel.BackgroundTransparency = 1
-PlayerNameLabel.Text             = LocalPlayer.DisplayName
-PlayerNameLabel.TextColor3       = Color3.fromRGB(230, 230, 255)
-PlayerNameLabel.TextSize         = 13
-PlayerNameLabel.Font             = Enum.Font.GothamBold
-PlayerNameLabel.TextXAlignment   = Enum.TextXAlignment.Center
-PlayerNameLabel.ZIndex           = 3
-PlayerNameLabel.Parent           = Sidebar
+-- Display name
+local DispName = Instance.new("TextLabel")
+DispName.Size             = UDim2.new(1, -6, 0, 16)
+DispName.Position         = UDim2.new(0, 3, 0, 56)
+DispName.BackgroundTransparency = 1
+DispName.Text             = LocalPlayer.DisplayName
+DispName.TextColor3       = Color3.fromRGB(220, 220, 250)
+DispName.TextSize         = isPhone and 10 or 11
+DispName.Font             = Enum.Font.GothamBold
+DispName.TextXAlignment   = Enum.TextXAlignment.Center
+DispName.TextTruncate     = Enum.TextTruncate.AtEnd
+DispName.ZIndex           = 3
+DispName.Parent           = Sidebar
 
 -- @username
-local PlayerUserLabel = Instance.new("TextLabel")
-PlayerUserLabel.Size             = UDim2.new(1, -10, 0, 18)
-PlayerUserLabel.Position         = UDim2.new(0, 5, 0, 102)
-PlayerUserLabel.BackgroundTransparency = 1
-PlayerUserLabel.Text             = "@" .. LocalPlayer.Name
-PlayerUserLabel.TextColor3       = Color3.fromRGB(120, 120, 160)
-PlayerUserLabel.TextSize         = 10
-PlayerUserLabel.Font             = Enum.Font.Gotham
-PlayerUserLabel.TextXAlignment   = Enum.TextXAlignment.Center
-PlayerUserLabel.ZIndex           = 3
-PlayerUserLabel.Parent           = Sidebar
+local UserName = Instance.new("TextLabel")
+UserName.Size             = UDim2.new(1, -6, 0, 14)
+UserName.Position         = UDim2.new(0, 3, 0, 71)
+UserName.BackgroundTransparency = 1
+UserName.Text             = "@" .. LocalPlayer.Name
+UserName.TextColor3       = Color3.fromRGB(100, 100, 140)
+UserName.TextSize         = isPhone and 9 or 10
+UserName.Font             = Enum.Font.Gotham
+UserName.TextXAlignment   = Enum.TextXAlignment.Center
+UserName.TextTruncate     = Enum.TextTruncate.AtEnd
+UserName.ZIndex           = 3
+UserName.Parent           = Sidebar
 
--- Divider under player info
-local SideInfoDiv = Instance.new("Frame")
-SideInfoDiv.Size             = UDim2.new(0.75, 0, 0, 1)
-SideInfoDiv.Position         = UDim2.new(0.125, 0, 0, 132)
-SideInfoDiv.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
-SideInfoDiv.BorderSizePixel  = 0
-SideInfoDiv.ZIndex           = 3
-SideInfoDiv.Parent           = Sidebar
+-- Separator
+local Sep = Instance.new("Frame")
+Sep.Size             = UDim2.new(0.7, 0, 0, 1)
+Sep.Position         = UDim2.new(0.15, 0, 0, 92)
+Sep.BackgroundColor3 = Color3.fromRGB(35, 35, 55)
+Sep.BorderSizePixel  = 0
+Sep.ZIndex           = 3
+Sep.Parent           = Sidebar
 
--- Sidebar tab: Main
-local SideTabMain = Instance.new("Frame")
-SideTabMain.Size             = UDim2.new(1, -16, 0, 36)
-SideTabMain.Position         = UDim2.new(0, 8, 0, 148)
-SideTabMain.BackgroundColor3 = Color3.fromRGB(90, 70, 200)
-SideTabMain.BorderSizePixel  = 0
-SideTabMain.ZIndex           = 3
-SideTabMain.Parent           = Sidebar
+-- Main tab button
+local MainTab = Instance.new("Frame")
+MainTab.Size             = UDim2.new(1, -14, 0, 32)
+MainTab.Position         = UDim2.new(0, 7, 0, 102)
+MainTab.BackgroundColor3 = Color3.fromRGB(75, 55, 180)
+MainTab.BorderSizePixel  = 0
+MainTab.ZIndex           = 3
+MainTab.Parent           = Sidebar
 
-local SideTabCorner = Instance.new("UICorner")
-SideTabCorner.CornerRadius = UDim.new(0, 8)
-SideTabCorner.Parent = SideTabMain
+local MainTabC = Instance.new("UICorner")
+MainTabC.CornerRadius = UDim.new(0, 7)
+MainTabC.Parent = MainTab
 
-local SideTabGrad = Instance.new("UIGradient")
-SideTabGrad.Color = ColorSequence.new({
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 80, 220)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 50, 150)),
+local MainTabGrad = Instance.new("UIGradient")
+MainTabGrad.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(95, 75, 210)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(55, 42, 140)),
 })
-SideTabGrad.Rotation = 90
-SideTabGrad.Parent = SideTabMain
+MainTabGrad.Rotation = 90
+MainTabGrad.Parent = MainTab
 
-local SideTabText = Instance.new("TextLabel")
-SideTabText.Size             = UDim2.new(1, -10, 1, 0)
-SideTabText.Position         = UDim2.new(0, 10, 0, 0)
-SideTabText.BackgroundTransparency = 1
-SideTabText.Text             = "⚡  Main"
-SideTabText.TextColor3       = Color3.fromRGB(255, 255, 255)
-SideTabText.TextSize         = 13
-SideTabText.Font             = Enum.Font.GothamBold
-SideTabText.TextXAlignment   = Enum.TextXAlignment.Left
-SideTabText.ZIndex           = 4
-SideTabText.Parent           = SideTabMain
+local MainTabTxt = Instance.new("TextLabel")
+MainTabTxt.Size             = UDim2.new(1, -8, 1, 0)
+MainTabTxt.Position         = UDim2.new(0, 8, 0, 0)
+MainTabTxt.BackgroundTransparency = 1
+MainTabTxt.Text             = "Main"
+MainTabTxt.TextColor3       = Color3.fromRGB(255, 255, 255)
+MainTabTxt.TextSize         = isPhone and 11 or 12
+MainTabTxt.Font             = Enum.Font.GothamBold
+MainTabTxt.TextXAlignment   = Enum.TextXAlignment.Left
+MainTabTxt.ZIndex           = 4
+MainTabTxt.Parent           = MainTab
 
--- ── CONTENT AREA ──────────────────────────────────────────────────────────────
+-- ══════════════════════════════════════
+--           CONTENT AREA
+-- ══════════════════════════════════════
+
 local ContentArea = Instance.new("Frame")
-ContentArea.Name             = "ContentArea"
-ContentArea.Size             = UDim2.new(1, -160, 1, -52)
-ContentArea.Position         = UDim2.new(0, 160, 0, 52)
+ContentArea.Size             = UDim2.new(1, -SIDE_W, 1, -TOP_H)
+ContentArea.Position         = UDim2.new(0, SIDE_W, 0, TOP_H)
 ContentArea.BackgroundTransparency = 1
 ContentArea.ClipsDescendants = true
 ContentArea.ZIndex           = 2
 ContentArea.Parent           = Main
 
--- Content title
-local ContentTitle = Instance.new("TextLabel")
-ContentTitle.Size             = UDim2.new(1, -20, 0, 40)
-ContentTitle.Position         = UDim2.new(0, 16, 0, 10)
-ContentTitle.BackgroundTransparency = 1
-ContentTitle.Text             = "Main  —  Select your sniper mode"
-ContentTitle.TextColor3       = Color3.fromRGB(180, 180, 220)
-ContentTitle.TextSize         = 13
-ContentTitle.Font             = Enum.Font.Gotham
-ContentTitle.TextXAlignment   = Enum.TextXAlignment.Left
-ContentTitle.ZIndex           = 3
-ContentTitle.Parent           = ContentArea
+-- Section title
+local SectionTitle = Instance.new("TextLabel")
+SectionTitle.Size             = UDim2.new(1, -16, 0, 32)
+SectionTitle.Position         = UDim2.new(0, 12, 0, 6)
+SectionTitle.BackgroundTransparency = 1
+SectionTitle.Text             = "Main  —  Select your sniper mode"
+SectionTitle.TextColor3       = Color3.fromRGB(140, 140, 175)
+SectionTitle.TextSize         = isPhone and 10 or 11
+SectionTitle.Font             = Enum.Font.Gotham
+SectionTitle.TextXAlignment   = Enum.TextXAlignment.Left
+SectionTitle.ZIndex           = 3
+SectionTitle.Parent           = ContentArea
 
--- ── SCROLLING FRAME ───────────────────────────────────────────────────────────
-local ScrollFrame = Instance.new("ScrollingFrame")
-ScrollFrame.Name                  = "ScrollFrame"
-ScrollFrame.Size                  = UDim2.new(1, -8, 1, -56)
-ScrollFrame.Position              = UDim2.new(0, 4, 0, 50)
-ScrollFrame.BackgroundTransparency = 1
-ScrollFrame.BorderSizePixel       = 0
-ScrollFrame.ScrollBarThickness    = 4
-ScrollFrame.ScrollBarImageColor3  = Color3.fromRGB(90, 70, 200)
-ScrollFrame.CanvasSize            = UDim2.new(0, 0, 0, 0)
-ScrollFrame.AutomaticCanvasSize   = Enum.AutomaticSize.Y
-ScrollFrame.ZIndex                = 3
-ScrollFrame.Parent                = ContentArea
+-- Scroll
+local Scroll = Instance.new("ScrollingFrame")
+Scroll.Size                   = UDim2.new(1, -6, 1, -40)
+Scroll.Position               = UDim2.new(0, 3, 0, 36)
+Scroll.BackgroundTransparency = 1
+Scroll.BorderSizePixel        = 0
+Scroll.ScrollBarThickness     = 3
+Scroll.ScrollBarImageColor3   = Color3.fromRGB(80, 60, 180)
+Scroll.CanvasSize             = UDim2.new(0, 0, 0, 0)
+Scroll.AutomaticCanvasSize    = Enum.AutomaticSize.Y
+Scroll.ZIndex                 = 3
+Scroll.Parent                 = ContentArea
 
 local ListLayout = Instance.new("UIListLayout")
-ListLayout.Padding         = UDim.new(0, 12)
-ListLayout.SortOrder       = Enum.SortOrder.LayoutOrder
-ListLayout.Parent          = ScrollFrame
+ListLayout.Padding    = UDim.new(0, 8)
+ListLayout.SortOrder  = Enum.SortOrder.LayoutOrder
+ListLayout.Parent     = Scroll
 
-local ListPadding = Instance.new("UIPadding")
-ListPadding.PaddingLeft   = UDim.new(0, 10)
-ListPadding.PaddingRight  = UDim.new(0, 14)
-ListPadding.PaddingTop    = UDim.new(0, 6)
-ListPadding.PaddingBottom = UDim.new(0, 16)
-ListPadding.Parent        = ScrollFrame
+local ListPad = Instance.new("UIPadding")
+ListPad.PaddingLeft   = UDim.new(0, 8)
+ListPad.PaddingRight  = UDim.new(0, 10)
+ListPad.PaddingTop    = UDim.new(0, 4)
+ListPad.PaddingBottom = UDim.new(0, 12)
+ListPad.Parent        = Scroll
 
 -- ══════════════════════════════════════
---          CARD BUILDER FUNCTION
+--         CLOSE HELPER
 -- ══════════════════════════════════════
 
-local function MakeLevelBadge(parent, level, posX, posY)
-	-- level: "safe_high"=green+recommended, "safe"=yellow, "acceptable"=red+warning
-	local colors = {
-		safe_high   = {bg = Color3.fromRGB(30, 160, 80),  text = "أمن جداً",   tag = "موصى به",   tagColor = Color3.fromRGB(50, 200, 100)},
-		safe        = {bg = Color3.fromRGB(190, 150, 20), text = "أمن",         tag = nil,          tagColor = nil},
-		acceptable  = {bg = Color3.fromRGB(180, 50, 50),  text = "مقبول",       tag = "⚠ تحذير",   tagColor = Color3.fromRGB(220, 80, 80)},
-	}
-	local cfg = colors[level]
+local function CloseUI(then_fn)
+	local t = TweenService:Create(Main,
+		TweenInfo.new(0.28, Enum.EasingStyle.Back, Enum.EasingDirection.In),
+		{Size = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 1}
+	)
+	t:Play()
+	t.Completed:Connect(function()
+		ScreenGui:Destroy()
+		if then_fn then then_fn() end
+	end)
+end
 
-	local wrapper = Instance.new("Frame")
-	wrapper.Size             = UDim2.new(0, 160, 0, 28)
-	wrapper.Position         = UDim2.new(0, posX, 0, posY)
-	wrapper.BackgroundTransparency = 1
-	wrapper.ZIndex           = 6
-	wrapper.Parent           = parent
+-- ══════════════════════════════════════
+--       RECOMMENDATION BADGE
+-- ══════════════════════════════════════
 
-	-- Label row
-	local levelTitle = Instance.new("TextLabel")
-	levelTitle.Size             = UDim2.new(1, 0, 0, 14)
-	levelTitle.Position         = UDim2.new(0, 0, 0, 0)
-	levelTitle.BackgroundTransparency = 1
-	levelTitle.Text             = "Recommendation Level"
-	levelTitle.TextColor3       = Color3.fromRGB(120, 120, 160)
-	levelTitle.TextSize         = 9
-	levelTitle.Font             = Enum.Font.Gotham
-	levelTitle.TextXAlignment   = Enum.TextXAlignment.Left
-	levelTitle.ZIndex           = 6
-	levelTitle.Parent           = wrapper
+local LEVEL_CFG = {
+	safe_high  = {bg = Color3.fromRGB(28, 148, 72),  text = "أمن جداً",  tag = "موصى به",  tagColor = Color3.fromRGB(60, 210, 110)},
+	safe       = {bg = Color3.fromRGB(175, 140, 18), text = "أمن",        tag = nil,         tagColor = nil},
+	acceptable = {bg = Color3.fromRGB(168, 44, 48),  text = "مقبول",      tag = "⚠ تحذير",  tagColor = Color3.fromRGB(220, 75, 75)},
+}
+
+local function MakeBadge(parent, level, yPos)
+	local cfg = LEVEL_CFG[level]
+
+	local wrap = Instance.new("Frame")
+	wrap.Size             = UDim2.new(0, 180, 0, 26)
+	wrap.Position         = UDim2.new(0, 0, 0, yPos)
+	wrap.BackgroundTransparency = 1
+	wrap.ZIndex           = 6
+	wrap.Parent           = parent
+
+	local lbl = Instance.new("TextLabel")
+	lbl.Size             = UDim2.new(1, 0, 0, 11)
+	lbl.BackgroundTransparency = 1
+	lbl.Text             = "Recommendation Level"
+	lbl.TextColor3       = Color3.fromRGB(100, 100, 140)
+	lbl.TextSize         = 8
+	lbl.Font             = Enum.Font.Gotham
+	lbl.TextXAlignment   = Enum.TextXAlignment.Left
+	lbl.ZIndex           = 6
+	lbl.Parent           = wrap
 
 	local badge = Instance.new("Frame")
-	badge.Size             = UDim2.new(0, 70, 0, 16)
-	badge.Position         = UDim2.new(0, 0, 0, 14)
+	badge.Size             = UDim2.new(0, 62, 0, 15)
+	badge.Position         = UDim2.new(0, 0, 0, 11)
 	badge.BackgroundColor3 = cfg.bg
 	badge.BorderSizePixel  = 0
 	badge.ZIndex           = 6
-	badge.Parent           = wrapper
+	badge.Parent           = wrap
 
-	local badgeCorner = Instance.new("UICorner")
-	badgeCorner.CornerRadius = UDim.new(1, 0)
-	badgeCorner.Parent = badge
+	local bc = Instance.new("UICorner")
+	bc.CornerRadius = UDim.new(1, 0)
+	bc.Parent = badge
 
-	local badgeText = Instance.new("TextLabel")
-	badgeText.Size             = UDim2.new(1, 0, 1, 0)
-	badgeText.BackgroundTransparency = 1
-	badgeText.Text             = cfg.text
-	badgeText.TextColor3       = Color3.fromRGB(255, 255, 255)
-	badgeText.TextSize         = 9
-	badgeText.Font             = Enum.Font.GothamBold
-	badgeText.TextXAlignment   = Enum.TextXAlignment.Center
-	badgeText.ZIndex           = 7
-	badgeText.Parent           = badge
+	local bt = Instance.new("TextLabel")
+	bt.Size             = UDim2.new(1, 0, 1, 0)
+	bt.BackgroundTransparency = 1
+	bt.Text             = cfg.text
+	bt.TextColor3       = Color3.fromRGB(255, 255, 255)
+	bt.TextSize         = 8
+	bt.Font             = Enum.Font.GothamBold
+	bt.ZIndex           = 7
+	bt.Parent           = badge
 
 	if cfg.tag then
-		local tagLabel = Instance.new("TextLabel")
-		tagLabel.Size             = UDim2.new(0, 80, 0, 16)
-		tagLabel.Position         = UDim2.new(0, 76, 0, 14)
-		tagLabel.BackgroundTransparency = 1
-		tagLabel.Text             = cfg.tag
-		tagLabel.TextColor3       = cfg.tagColor
-		tagLabel.TextSize         = 9
-		tagLabel.Font             = Enum.Font.GothamBold
-		tagLabel.TextXAlignment   = Enum.TextXAlignment.Left
-		tagLabel.ZIndex           = 7
-		tagLabel.Parent           = wrapper
+		local tl = Instance.new("TextLabel")
+		tl.Size             = UDim2.new(0, 80, 0, 15)
+		tl.Position         = UDim2.new(0, 66, 0, 11)
+		tl.BackgroundTransparency = 1
+		tl.Text             = cfg.tag
+		tl.TextColor3       = cfg.tagColor
+		tl.TextSize         = 8
+		tl.Font             = Enum.Font.GothamBold
+		tl.TextXAlignment   = Enum.TextXAlignment.Left
+		tl.ZIndex           = 7
+		tl.Parent           = wrap
 	end
-
-	return wrapper
 end
 
-local function CreateCard(order, btnTitle, descAR, level, callback, imageAssetId)
-	-- level: "safe_high", "safe", "acceptable"
+-- ══════════════════════════════════════
+--          CARD BUILDER
+-- ══════════════════════════════════════
+
+local function CreateCard(order, title, desc, level, callback, imgId)
 
 	local Card = Instance.new("Frame")
-	Card.Name             = "Card_" .. order
-	Card.Size             = UDim2.new(1, 0, 0, 195)
-	Card.BackgroundColor3 = Color3.fromRGB(18, 18, 26)
+	Card.Name             = "Card" .. order
+	Card.Size             = UDim2.new(1, 0, 0, CARD_H)
+	Card.BackgroundColor3 = Color3.fromRGB(16, 16, 23)
 	Card.BorderSizePixel  = 0
 	Card.LayoutOrder      = order
 	Card.ZIndex           = 4
-	Card.Parent           = ScrollFrame
+	Card.Parent           = Scroll
 
-	local CardCorner = Instance.new("UICorner")
-	CardCorner.CornerRadius = UDim.new(0, 10)
-	CardCorner.Parent = Card
+	local CC = Instance.new("UICorner")
+	CC.CornerRadius = UDim.new(0, 9)
+	CC.Parent = Card
 
-	local CardStroke = Instance.new("UIStroke")
-	CardStroke.Color       = Color3.fromRGB(45, 45, 65)
-	CardStroke.Thickness   = 1
-	CardStroke.Transparency = 0.3
-	CardStroke.Parent = Card
+	local CS = Instance.new("UIStroke")
+	CS.Color       = Color3.fromRGB(38, 38, 58)
+	CS.Thickness   = 1
+	CS.Parent = Card
 
-	-- Number badge top-left
-	local NumBadge = Instance.new("Frame")
-	NumBadge.Size             = UDim2.new(0, 24, 0, 24)
-	NumBadge.Position         = UDim2.new(0, 12, 0, 12)
-	NumBadge.BackgroundColor3 = Color3.fromRGB(60, 50, 140)
-	NumBadge.BorderSizePixel  = 0
-	NumBadge.ZIndex           = 5
-	NumBadge.Parent           = Card
+	-- Number badge
+	local Num = Instance.new("Frame")
+	Num.Size             = UDim2.new(0, 22, 0, 22)
+	Num.Position         = UDim2.new(0, 10, 0, 10)
+	Num.BackgroundColor3 = Color3.fromRGB(55, 42, 130)
+	Num.BorderSizePixel  = 0
+	Num.ZIndex           = 5
+	Num.Parent           = Card
 
-	local NumCorner = Instance.new("UICorner")
-	NumCorner.CornerRadius = UDim.new(0, 6)
-	NumCorner.Parent = NumBadge
+	local NC = Instance.new("UICorner")
+	NC.CornerRadius = UDim.new(0, 5)
+	NC.Parent = Num
 
-	local NumText = Instance.new("TextLabel")
-	NumText.Size             = UDim2.new(1, 0, 1, 0)
-	NumText.BackgroundTransparency = 1
-	NumText.Text             = tostring(order)
-	NumText.TextColor3       = Color3.fromRGB(200, 190, 255)
-	NumText.TextSize         = 12
-	NumText.Font             = Enum.Font.GothamBold
-	NumText.TextXAlignment   = Enum.TextXAlignment.Center
-	NumText.ZIndex           = 6
-	NumText.Parent           = NumBadge
+	local NT = Instance.new("TextLabel")
+	NT.Size             = UDim2.new(1, 0, 1, 0)
+	NT.BackgroundTransparency = 1
+	NT.Text             = tostring(order)
+	NT.TextColor3       = Color3.fromRGB(190, 180, 255)
+	NT.TextSize         = 11
+	NT.Font             = Enum.Font.GothamBold
+	NT.ZIndex           = 6
+	NT.Parent           = Num
 
-	-- Button Title
-	local BtnTitleLabel = Instance.new("TextLabel")
-	BtnTitleLabel.Size             = UDim2.new(1, -50, 0, 24)
-	BtnTitleLabel.Position         = UDim2.new(0, 44, 0, 11)
-	BtnTitleLabel.BackgroundTransparency = 1
-	BtnTitleLabel.Text             = btnTitle
-	BtnTitleLabel.TextColor3       = Color3.fromRGB(230, 230, 255)
-	BtnTitleLabel.TextSize         = 12
-	BtnTitleLabel.Font             = Enum.Font.GothamBold
-	BtnTitleLabel.TextXAlignment   = Enum.TextXAlignment.Left
-	BtnTitleLabel.TextTruncate     = Enum.TextTruncate.AtEnd
-	BtnTitleLabel.ZIndex           = 5
-	BtnTitleLabel.Parent           = Card
+	-- Card title
+	local CTL = Instance.new("TextLabel")
+	CTL.Size             = UDim2.new(1, -120, 0, 22)
+	CTL.Position         = UDim2.new(0, 38, 0, 9)
+	CTL.BackgroundTransparency = 1
+	CTL.Text             = title
+	CTL.TextColor3       = Color3.fromRGB(225, 225, 250)
+	CTL.TextSize         = isPhone and 10 or 11
+	CTL.Font             = Enum.Font.GothamBold
+	CTL.TextXAlignment   = Enum.TextXAlignment.Left
+	CTL.TextTruncate     = Enum.TextTruncate.AtEnd
+	CTL.ZIndex           = 5
+	CTL.Parent           = Card
 
 	-- Divider
-	local TitleDiv = Instance.new("Frame")
-	TitleDiv.Size             = UDim2.new(1, -24, 0, 1)
-	TitleDiv.Position         = UDim2.new(0, 12, 0, 42)
-	TitleDiv.BackgroundColor3 = Color3.fromRGB(35, 35, 55)
-	TitleDiv.BorderSizePixel  = 0
-	TitleDiv.ZIndex           = 5
-	TitleDiv.Parent           = Card
+	local Div = Instance.new("Frame")
+	Div.Size             = UDim2.new(1, -18, 0, 1)
+	Div.Position         = UDim2.new(0, 9, 0, 35)
+	Div.BackgroundColor3 = Color3.fromRGB(30, 30, 48)
+	Div.BorderSizePixel  = 0
+	Div.ZIndex           = 5
+	Div.Parent           = Card
 
-	-- Description Arabic
-	local DescLabel = Instance.new("TextLabel")
-	DescLabel.Size             = UDim2.new(0, 160, 0, 32)
-	DescLabel.Position         = UDim2.new(0, 12, 0, 50)
-	DescLabel.BackgroundTransparency = 1
-	DescLabel.Text             = descAR
-	DescLabel.TextColor3       = Color3.fromRGB(140, 140, 175)
-	DescLabel.TextSize         = 10
-	DescLabel.Font             = Enum.Font.Gotham
-	DescLabel.TextXAlignment   = Enum.TextXAlignment.Left
-	DescLabel.TextYAlignment   = Enum.TextYAlignment.Top
-	DescLabel.TextWrapped      = true
-	DescLabel.ZIndex           = 5
-	DescLabel.Parent           = Card
+	-- Description
+	local Desc = Instance.new("TextLabel")
+	Desc.Size             = UDim2.new(0, isPhone and 140 or 160, 0, 28)
+	Desc.Position         = UDim2.new(0, 10, 0, 40)
+	Desc.BackgroundTransparency = 1
+	Desc.Text             = desc
+	Desc.TextColor3       = Color3.fromRGB(120, 120, 160)
+	Desc.TextSize         = isPhone and 9 or 10
+	Desc.Font             = Enum.Font.Gotham
+	Desc.TextXAlignment   = Enum.TextXAlignment.Left
+	Desc.TextYAlignment   = Enum.TextYAlignment.Top
+	Desc.TextWrapped      = true
+	Desc.ZIndex           = 5
+	Desc.Parent           = Card
 
-	-- Recommendation Level badge (bottom-left)
-	MakeLevelBadge(Card, level, 12, 95)
+	-- Recommendation Level badge
+	MakeBadge(Card, level, 76)
 
-	-- Image placeholder (right side)
+	-- Image holder (right side)
+	local ImgW  = isPhone and 110 or 130
+	local ImgH  = CARD_H - 26
 	local ImgHolder = Instance.new("Frame")
-	ImgHolder.Name             = "ImageHolder"
-	ImgHolder.Size             = UDim2.new(0, 155, 0, 125)
-	ImgHolder.Position         = UDim2.new(1, -167, 0, 46)
-	ImgHolder.BackgroundColor3 = Color3.fromRGB(24, 24, 34)
+	ImgHolder.Size             = UDim2.new(0, ImgW, 0, ImgH)
+	ImgHolder.Position         = UDim2.new(1, -(ImgW + 10), 0, 12)
+	ImgHolder.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
 	ImgHolder.BorderSizePixel  = 0
-	ImgHolder.ZIndex = Card
+	ImgHolder.ZIndex           = 5
+	ImgHolder.Parent           = Card
 
-local ImgHolderCorner = Instance.new("UICorner")
-	ImgHolderCorner.CornerRadius = UDim.new(0, 8)
-	ImgHolderCorner.Parent = ImgHolder
+	local IHC = Instance.new("UICorner")
+	IHC.CornerRadius = UDim.new(0, 7)
+	IHC.Parent = ImgHolder
 
-	local ImgHolderStroke = Instance.new("UIStroke")
-	ImgHolderStroke.Color     = Color3.fromRGB(50, 50, 75)
-	ImgHolderStroke.Thickness = 1
-	ImgHolderStroke.Parent = ImgHolder
+	local IHS = Instance.new("UIStroke")
+	IHS.Color     = Color3.fromRGB(40, 40, 62)
+	IHS.Thickness = 1
+	IHS.Parent = ImgHolder
 
-	local ImgLabel = Instance.new("ImageLabel")
-	ImgLabel.Size             = UDim2.new(1, -4, 1, -4)
-	ImgLabel.Position         = UDim2.new(0, 2, 0, 2)
-	ImgLabel.BackgroundTransparency = 1
-	ImgLabel.ScaleType        = Enum.ScaleType.Fit
-	ImgLabel.ZIndex           = 6
+	local ImgLbl = Instance.new("ImageLabel")
+	ImgLbl.Size             = UDim2.new(1, -4, 1, -4)
+	ImgLbl.Position         = UDim2.new(0, 2, 0, 2)
+	ImgLbl.BackgroundTransparency = 1
+	ImgLbl.ScaleType        = Enum.ScaleType.Fit
+	ImgLbl.Image            = (imgId and imgId ~= "") and imgId or ""
+	ImgLbl.ZIndex           = 6
+	ImgLbl.Parent           = ImgHolder
 
-	if imageAssetId and imageAssetId ~= "" then
-		ImgLabel.Image = imageAssetId
-	else
-		ImgLabel.Image = ""
-	end
-	ImgLabel.Parent = ImgHolder
-
-	-- Placeholder text if no image
-	local PlaceholderText = Instance.new("TextLabel")
-	PlaceholderText.Size             = UDim2.new(1, 0, 1, 0)
-	PlaceholderText.BackgroundTransparency = 1
-	PlaceholderText.Text             = imageAssetId ~= "" and "" or "🖼  ضع صورتك هنا\nImageHolder"
-	PlaceholderText.TextColor3       = Color3.fromRGB(70, 70, 100)
-	PlaceholderText.TextSize         = 9
-	PlaceholderText.Font             = Enum.Font.Gotham
-	PlaceholderText.TextXAlignment   = Enum.TextXAlignment.Center
-	PlaceholderText.TextWrapped      = true
-	PlaceholderText.ZIndex           = 6
-	PlaceholderText.Parent           = ImgHolder
-
-	-- ACTIVATE BUTTON
+	local ImgPlaceholder = Instance.new("TextLabel")
+	ImgPlaceholder.Size             = UDim2.new(1, 0, 1, 0)
+	ImgPlaceholder.BackgroundTransparency = 1
+	ImgPlaceholder.Text             = (imgId and imgId ~= "") and "" or "🖼\nضع صورتك\nهنا"
+	ImgPlaceholder.TextColor3       = Color3.fromRGB(55, 55, 80)
+	ImgPlaceholder.TextSize         = 9
+	ImgPlaceholder.Font             = Enum.Font.Gotham
+	ImgPlaceholder.TextWrapped      = true
+	ImgPlaceholder.ZIndex           = 6
+	ImgPlaceholder.Parent           = ImgHolder
+	local BtnW = isPhone and 118 or 138
 	local ActivateBtn = Instance.new("TextButton")
-	ActivateBtn.Name             = "ActivateBtn"
-	ActivateBtn.Size             = UDim2.new(0, 130, 0, 30)
-	ActivateBtn.Position         = UDim2.new(0, 12, 1, -42)
-	ActivateBtn.BackgroundColor3 = Color3.fromRGB(80, 60, 190)
+	ActivateBtn.Size             = UDim2.new(0, BtnW, 0, 28)
+	ActivateBtn.Position         = UDim2.new(0, 10, 1, -38)
+	ActivateBtn.BackgroundColor3 = Color3.fromRGB(22, 22, 34)
 	ActivateBtn.Text             = "▶  تشغيل"
-	ActivateBtn.TextColor3       = Color3.fromRGB(255, 255, 255)
-	ActivateBtn.TextSize         = 12
+	ActivateBtn.TextColor3       = Color3.fromRGB(170, 155, 255)
+	ActivateBtn.TextSize         = isPhone and 13 or 14
 	ActivateBtn.Font             = Enum.Font.GothamBold
 	ActivateBtn.BorderSizePixel  = 0
 	ActivateBtn.ZIndex           = 6
 	ActivateBtn.Parent           = Card
 
-	local ActivateBtnCorner = Instance.new("UICorner")
-	ActivateBtnCorner.CornerRadius = UDim.new(0, 8)
-	ActivateBtnCorner.Parent = ActivateBtn
+	local ABtnC = Instance.new("UICorner")
+	ABtnC.CornerRadius = UDim.new(0, 7)
+	ABtnC.Parent = ActivateBtn
 
-	local BtnGrad = Instance.new("UIGradient")
-	BtnGrad.Color = ColorSequence.new({
-		ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 80, 220)),
-		ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 45, 160)),
-	})
-	BtnGrad.Rotation = 90
-	BtnGrad.Parent = ActivateBtn
+	local ABtnS = Instance.new("UIStroke")
+	ABtnS.Color     = Color3.fromRGB(80, 60, 180)
+	ABtnS.Thickness = 1.2
+	ABtnS.Parent = ActivateBtn
 
-	-- Button hover
+	-- Hover
 	ActivateBtn.MouseEnter:Connect(function()
-		TweenService:Create(ActivateBtn, TweenInfo.new(0.15), {
-			BackgroundColor3 = Color3.fromRGB(110, 90, 240)
+		TweenService:Create(ActivateBtn, TweenInfo.new(0.14), {
+			BackgroundColor3 = Color3.fromRGB(32, 28, 52),
+			TextColor3       = Color3.fromRGB(200, 190, 255),
 		}):Play()
 	end)
 	ActivateBtn.MouseLeave:Connect(function()
-		TweenService:Create(ActivateBtn, TweenInfo.new(0.15), {
-			BackgroundColor3 = Color3.fromRGB(80, 60, 190)
+		TweenService:Create(ActivateBtn, TweenInfo.new(0.14), {
+			BackgroundColor3 = Color3.fromRGB(22, 22, 34),
+			TextColor3       = Color3.fromRGB(170, 155, 255),
 		}):Play()
 	end)
 
-	-- Click: run function + close UI
+	-- Click
 	ActivateBtn.MouseButton1Click:Connect(function()
-		-- Flash effect
+		-- Flash
 		local flash = Instance.new("Frame")
 		flash.Size             = UDim2.new(1, 0, 1, 0)
-		flash.BackgroundColor3 = Color3.fromRGB(120, 100, 255)
-		flash.BackgroundTransparency = 0.6
+		flash.BackgroundColor3 = Color3.fromRGB(110, 90, 240)
+		flash.BackgroundTransparency = 0.65
 		flash.BorderSizePixel  = 0
 		flash.ZIndex           = 20
 		flash.Parent           = Main
 		local fc = Instance.new("UICorner")
-		fc.CornerRadius = UDim.new(0, 12)
+		fc.CornerRadius = UDim.new(0, 11)
 		fc.Parent = flash
+		TweenService:Create(flash, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+		task.delay(0.3, function() flash:Destroy() end)
 
-		TweenService:Create(flash, TweenInfo.new(0.35), {
-			BackgroundTransparency = 1
-		}):Play()
-		task.delay(0.35, function() flash:Destroy() end)
-
-		-- Close UI with animation
-		task.delay(0.15, function()
-			local closeTween = TweenService:Create(Main, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-				Size     = UDim2.new(0, 0, 0, 0),
-				BackgroundTransparency = 1,
-			})
-			closeTween:Play()
-			closeTween.Completed:Connect(function()
-				ScreenGui:Destroy()
-				callback()
-			end)
+		task.delay(0.1, function()
+			CloseUI(callback)
 		end)
 	end)
 
 	return Card
 end
 
--- ── CREATE THE 4 CARDS ────────────────────────────────────────────────────────
--- Card 1
-CreateCard(
-	1,
+-- ══════════════════════════════════════
+--            BUILD CARDS
+-- ══════════════════════════════════════
+
+CreateCard(1,
 	"OG-Sniper with 0.45 AimDelay",
 	"ارجاع السنايبر القديم مع تاخير 0.45 عند الاطلاق",
 	"acceptable",
 	OGSniper_045,
-	""  -- ← ضع asset id الصورة هنا مثال: "rbxassetid://123456"
+	""   -- ← rbxassetid://XXXXXX
 )
 
--- Card 2
-CreateCard(
-	2,
+CreateCard(2,
 	"OG-Sniper with 0.65 AimDelay",
 	"ارجاع السنايبر القديم مع تاخير 0.65 عند الاطلاق",
 	"safe_high",
@@ -664,9 +659,7 @@ CreateCard(
 	""
 )
 
--- Card 3
-CreateCard(
-	3,
+CreateCard(3,
 	"NEW-Sniper with better view with 0.45 AimDelay",
 	"السنايبر الجديد نسخة محسنة ورؤية اكبر مع 0.45 تاخير الاطلاق",
 	"safe",
@@ -674,9 +667,7 @@ CreateCard(
 	""
 )
 
--- Card 4
-CreateCard(
-	4,
+CreateCard(4,
 	"NEW-Sniper with better view with 0.65 AimDelay",
 	"السنايبر الجديد نسخة محسنة ورؤية اكبر مع 0.65 تاخير الاطلاق",
 	"safe_high",
@@ -685,103 +676,83 @@ CreateCard(
 )
 
 -- ══════════════════════════════════════
---         DRAGGING SYSTEM
+--           DRAGGING
 -- ══════════════════════════════════════
 
-local dragging = false
-local dragStart, startPos
+local dragging, dragStart, startPos = false, nil, nil
 
-TopBar.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 or
-		input.UserInputType == Enum.UserInputType.Touch then
+TopBar.InputBegan:Connect(function(i)
+	if i.UserInputType == Enum.UserInputType.MouseButton1
+		or i.UserInputType == Enum.UserInputType.Touch then
 		dragging  = true
-		dragStart = input.Position
+		dragStart = i.Position
 		startPos  = Main.Position
 	end
 end)
 
-UserInputService.InputChanged:Connect(function(input)
-	if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or
-		input.UserInputType == Enum.UserInputType.Touch) then
-		local delta = input.Position - dragStart
+UserInputService.InputChanged:Connect(function(i)
+	if dragging and (i.UserInputType == Enum.UserInputType.MouseMovement
+		or i.UserInputType == Enum.UserInputType.Touch) then
+		local d = i.Position - dragStart
 		Main.Position = UDim2.new(
-			startPos.X.Scale,
-			startPos.X.Offset + delta.X,
-			startPos.Y.Scale,
-			startPos.Y.Offset + delta.Y
+			startPos.X.Scale, startPos.X.Offset + d.X,
+			startPos.Y.Scale, startPos.Y.Offset + d.Y
 		)
 	end
 end)
 
-UserInputService.InputEnded:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 or
-		input.UserInputType == Enum.UserInputType.Touch then
+UserInputService.InputEnded:Connect(function(i)
+	if i.UserInputType == Enum.UserInputType.MouseButton1
+		or i.UserInputType == Enum.UserInputType.Touch then
 		dragging = false
 	end
 end)
 
 -- ══════════════════════════════════════
---         CLOSE / MINIMIZE
+--       CLOSE / MINIMIZE BUTTONS
 -- ══════════════════════════════════════
 
 CloseBtn.MouseButton1Click:Connect(function()
-	local t = TweenService:Create(Main,
-		TweenInfo.new(0.28, Enum.EasingStyle.Back, Enum.EasingDirection.In),
-		{Size = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 1}
-	)
-	t:Play()
-	t.Completed:Connect(function() ScreenGui:Destroy() end)
+	CloseUI(nil)
 end)
 
 local minimized = false
 MinBtn.MouseButton1Click:Connect(function()
 	minimized = not minimized
-	if minimized then
-		TweenService:Create(Main, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
-			Size = UDim2.new(0, 700, 0, 52)
-		}):Play()
-		MinBtn.Text = "▢"
-	else
-		TweenService:Create(Main, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
-			Size = UDim2.new(0, 700, 0, 540)
-		}):Play()
-		MinBtn.Text = "─"
-	end
+	TweenService:Create(Main, TweenInfo.new(0.22, Enum.EasingStyle.Quad), {
+		Size = minimized
+			and UDim2.new(0, UI_W, 0, TOP_H)
+			or  UDim2.new(0, UI_W, 0, UI_H)
+	}):Play()
+	MinBtn.Text = minimized and "▢" or "—"
 end)
 
 -- ══════════════════════════════════════
---         OPEN ANIMATION (FANCY)
+--         OPEN ANIMATION
 -- ══════════════════════════════════════
 
-Main.BackgroundTransparency = 1
-
--- Step 1: scale in with bounce
 local openTween = TweenService:Create(Main,
-	TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+	TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
 	{
-		Size = UDim2.new(0, 700, 0, 540),
+		Size                  = UDim2.new(0, UI_W, 0, UI_H),
 		BackgroundTransparency = 0,
 	}
 )
 openTween:Play()
 
--- Step 2: slide children in after main opens
-task.delay(0.15, function()
-	for _, child in ipairs({TopBar, Sidebar, ContentArea}) do
-		local origTrans = child.BackgroundTransparency
-		child.BackgroundTransparency = 1
-		TweenService:Create(child, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-			BackgroundTransparency = origTrans,
-		}):Play()
+task.delay(0.18, function()
+	for _, f in ipairs({TopBar, Sidebar, ContentArea}) do
+		if f:IsA("Frame") then
+			local orig = f.BackgroundTransparency
+			f.BackgroundTransparency = 1
+			TweenService:Create(f, TweenInfo.new(0.28), {BackgroundTransparency = orig}):Play()
+		end
 	end
 end)
 
--- Step 3: accent line shimmer on open
-task.delay(0.4, function()
-	local shimmer = TweenService:Create(AccentGrad,
-		TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, 2, true),
-		{Offset = Vector2.new(0.5, 0)}
-	)
-	shimmer:Play()
+task.delay(0.38, function()
+	TweenService:Create(AccGrad,
+		TweenInfo.new(1.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, 3, true),
+		{Offset = Vector2.new(0.4, 0)}
+	):Play()
 end)
-
