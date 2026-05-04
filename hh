@@ -1,4 +1,4 @@
-local scriptURL = "https://pastebin.com/raw/iXC0AiXQ"
+local scriptURL = "https://raw.githubusercontent.com/lolmomn939-prog/jrjrhr/refs/heads/main/hh"
 
 -- قائمة الآيديات الممنوعة (للفحص الفوري في السيرفر الحالي)
 local blacklistedIDs = {
