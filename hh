@@ -2,7 +2,7 @@ local scriptURL = "https://raw.githubusercontent.com/lolmomn939-prog/jrjrhr/refs
 
 -- قائمة الآيديات الممنوعة (للفحص الفوري في السيرفر الحالي)
 local blacklistedIDs = {
-    6153474909,
+    7896483567,
     10377092761
 }
 
