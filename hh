@@ -1,33 +1,10 @@
-local scriptURL = "https://raw.githubusercontent.com/lolmomn939-prog/jrjrhr/refs/heads/main/hh"
+-- كود السكربت المرفوع على Github مثلاً
+local args = {...} -- هنا يتم تجميع كل الـ Args المرسلة
 
--- قائمة الآيديات الممنوعة (للفحص الفوري في السيرفر الحالي)
-local blacklistedIDs = {
-    7956379006,
-    10377092761
-}
+local arg1 = args[1] -- ستكون "Adwan"
+local arg2 = args[2]   -- ستكون 777
+local arg3 = args[3] -- ستكون true
 
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-
--- دالة الطرد الفوري
-local function check()
-    for _, id in ipairs(blacklistedIDs) do
-        if LocalPlayer.UserId == id then
-            LocalPlayer:Kick("Exploiting")
-            return true
-        end
-    end
-    return false
-end
-
--- 1. فحص اللاعب فور تشغيل السكربت
-check()
-
--- 2. إعداد الحماية للانتقال عبر التيليبورت كما طلبت
-if syn and syn.queue_on_teleport then
-    syn.queue_on_teleport('loadstring(game:HttpGet("' .. scriptURL .. '"))()')
-elseif queue_on_teleport then
-    queue_on_teleport('loadstring(game:HttpGet("' .. scriptURL .. '"))()')
-elseif queueonteleport then
-    queueonteleport('loadstring(game:HttpGet("' .. scriptURL .. '"))()')
-end
+print(arg1)
+print(arg2)
+print(arg3)
