@@ -3,14 +3,7 @@ local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local LocalPlayer = Players.LocalPlayer
-local args = {...}
-local Settings = args[1]
 
-local sniperZoom = Settings["Sniper"].Zoom
-local sniperCrosshair = Settings["Sniper"].CrossHairSize
-
-local g36Zoom = Settings["G36"].Zoom
-local g36Crosshair = Settings["G36"].CrossHairSize
 
 
 
@@ -306,23 +299,40 @@ local Workspace = game:GetService("Workspace")
 local playerName = LocalPlayer.Name
 local container = Workspace:WaitForChild(playerName)
 
+local args = {...}
+local userSettings = args[1] or {}
+
+-- دالة مساعدة لسحب القيم بسهولة مع قيمة افتراضية
+local function getVal(weapon, key, fallback)
+    if userSettings[weapon] and userSettings[weapon][key] then
+        return userSettings[weapon][key]
+    end
+    return fallback
+end
+
 local defaultWeaponSettings = {
     ["Sniper"] = {
         AimDelay = 0.3,
         Scope = false,
-        AimFieldOfView = sniperZoom or 29,
-CrosshairSize = sniperCrosshair or 25,
- Recoil = 5,
- Instability = 5
+        -- يسحب Zoom من اللودر، وإذا مو موجود يحط 29
+        AimFieldOfView = getVal("Sniper", "Zoom", 29), 
+        -- يسحب CrossHairSize من اللودر، وإذا مو موجود يحط 25
+        CrosshairSize = getVal("Sniper", "CrossHairSize", 25),
+        Recoil = 5,
+        Instability = 5
     },
     ["G36"] = {
-  AimFieldOfView = g36Zoom or 29,
-CrosshairSize = g36Crosshair or 25,
+        AimFieldOfView = getVal("G36", "Zoom", 35),
+        CrosshairSize = getVal("G36", "CrossHairSize", 25),
         AimDelay = 0.3,
- Recoil = 6,
- Instability = 5
-    },
+        Recoil = 6,
+        Instability = 5
+    }
 }
+
+-- تجربة للتأكد أن القيم وصلت
+print("Sniper FOV: " .. defaultWeaponSettings.Sniper.AimFieldOfView)
+print("G36 Crosshair: " .. defaultWeaponSettings.G36.CrosshairSize)
 
 local cursedWeaponSettings = {
     ["Sniper"] = {
