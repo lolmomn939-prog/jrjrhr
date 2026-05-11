@@ -3,8 +3,14 @@ local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local LocalPlayer = Players.LocalPlayer
-print("ddd")
+local args = {...}
+local Settings = args[1]
 
+local sniperZoom = Settings["Sniper"].Zoom
+local sniperCrosshair = Settings["Sniper"].CrossHairSize
+
+local g36Zoom = Settings["G36"].Zoom
+local g36Crosshair = Settings["G36"].CrossHairSize
 
 
 
