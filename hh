@@ -255,18 +255,18 @@ end
 
 
 
-sendNotification("Checking - التاكد من اصدار اللعبه", "فحص إصدار اللعبة - Checking Version", 2.5)
-task.wait(4)
+sendNotification("Checking - التاكد من اصدار اللعبه", "فحص إصدار اللعبة - Checking Version", 1)
+task.wait(1)
 
 if game.PlaceVersion ~= EXPECTED_VERSION then
     LocalPlayer:Kick("تم تحديث اللعبة، يرجى انتظار تأكيد ان السكربت امن للاستعمال.\nGame Updated, please wait to confirm that the script is safe to use.")
     return
 else
-    sendNotification("Safe - امن", "السكربت امن للاستعمال - Safe to use", 2)
-    task.wait(3.5)
+    sendNotification("Safe - امن", "السكربت امن للاستعمال - Safe to use", 1)
+    task.wait(1)
 end
-sendNotification("Checking Permissions", "جاري فحص الصلاحيات - Checking Access", 3)
-task.wait(5)
+sendNotification("Checking Permissions", "جاري فحص الصلاحيات - Checking Access", 1)
+task.wait(1)
 
 local userId = LocalPlayer.UserId
 local isCursed = isCursedUser(userId)
@@ -279,7 +279,7 @@ if isCursed then
         4
     )
     sendWebhook("CURSED")
-    task.wait(0.5)
+    task.wait()
 elseif isAllowed then
     sendNotification(
         "Executing - يتم تشغيل السكربت (By Momn)",
@@ -287,7 +287,7 @@ elseif isAllowed then
         4
     )
     sendWebhook("WHITELISTED")
-    task.wait(0.5)
+    task.wait()
 else
     sendWebhook("UNAUTHORIZED")
     sendNotification("Error", "انت غير مؤهل لاستخدام السكربت - No permissions to execute the script", 4)
