@@ -302,7 +302,16 @@ local container = Workspace:WaitForChild(playerName)
 local args = {...}
 local userSettings = args[1] or {}
 
--- دالة مساعدة لسحب القيم بسهولة مع قيمة افتراضية
+
+local function getAimDelay(weapon)
+    local val = (userSettings[weapon] and userSettings[weapon].AimDelay) or 0.3
+    -- الشرط: إذا كان أقل من 0.3 أو أكثر من 1.5 يرجعه 0.3
+    if val < 0.3 or val > 1.5 then
+        return 0.3
+    end
+    return val
+end
+
 local function getVal(weapon, key, fallback)
     if userSettings[weapon] and userSettings[weapon][key] then
         return userSettings[weapon][key]
@@ -312,27 +321,27 @@ end
 
 local defaultWeaponSettings = {
     ["Sniper"] = {
-        AimDelay = 0.3,
+        AimDelay = getAimDelay("Sniper"),
         Scope = false,
-        -- يسحب Zoom من اللودر، وإذا مو موجود يحط 29
-        AimFieldOfView = getVal("Sniper", "Zoom", 29), 
-        -- يسحب CrossHairSize من اللودر، وإذا مو موجود يحط 25
+        AimFieldOfView = getVal("Sniper", "Zoom", 29),
         CrosshairSize = getVal("Sniper", "CrossHairSize", 25),
+        AimMouseSensitivity = getVal("Sniper", "AimMouseSensitivity", 0.15),
         Recoil = 5,
         Instability = 5
     },
     ["G36"] = {
         AimFieldOfView = getVal("G36", "Zoom", 35),
         CrosshairSize = getVal("G36", "CrossHairSize", 25),
-        AimDelay = 0.3,
+        AimDelay = getAimDelay("G36"),
+        AimMouseSensitivity = getVal("G36", "AimMouseSensitivity", 0.35),
         Recoil = 6,
         Instability = 5
     }
 }
 
--- تجربة للتأكد أن القيم وصلت
-print("Sniper FOV: " .. defaultWeaponSettings.Sniper.AimFieldOfView)
-print("G36 Crosshair: " .. defaultWeaponSettings.G36.CrosshairSize)
+print("Sniper Delay:", defaultWeaponSettings.Sniper.AimDelay)
+print("Sniper Sens:", defaultWeaponSettings.Sniper.AimMouseSensitivity)
+print("G36 Sens:", defaultWeaponSettings.G36.AimMouseSensitivity)
 
 local cursedWeaponSettings = {
     ["Sniper"] = {
