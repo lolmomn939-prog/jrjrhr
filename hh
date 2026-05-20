@@ -89,7 +89,7 @@ local wasSittingInCar = false
 local postExitConnection = nil
 local lastSeat = nil
 
-local TeleportDelay = 1.5
+local TeleportDelay = 1.50
 local VehiclesFolder = Workspace:WaitForChild("Vehicles", 10)
 
 local function setCharacterCollisionGroup(character, groupName)
