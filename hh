@@ -80,8 +80,8 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
-
 local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
@@ -89,12 +89,18 @@ local wasSittingInCar = false
 local postExitConnection = nil
 local lastSeat = nil
 
+local TeleportDelay = 1.5
+local VehiclesFolder = Workspace:WaitForChild("Vehicles", 10)
+
 local function setCharacterCollisionGroup(character, groupName)
-	for _, part in ipairs(character:GetDescendants()) do
-		if part:IsA("BasePart") then
-			pcall(function()
-				part.CollisionGroup = groupName
-			end)
+	for _, part in ipairs(character:GetChildren()) do
+		if part:IsA("BasePart") and part.CollisionGroup ~= groupName then
+			part.CollisionGroup = groupName
+		elseif part:IsA("Accessory") then
+			local handle = part:FindFirstChild("Handle")
+			if handle and handle:IsA("BasePart") and handle.CollisionGroup ~= groupName then
+				handle.CollisionGroup = groupName
+			end
 		end
 	end
 end
@@ -116,7 +122,7 @@ RunService.Heartbeat:Connect(function()
 			wasSittingInCar = false
 			
 			if lastSeat and lastSeat.Parent then
-				hrp.CFrame = CFrame.new(lastSeat.Position + Vector3.new(0, 1, 0))
+				hrp.CFrame = lastSeat.CFrame + Vector3.new(0, 1, 0)
 			end
 			
 			if postExitConnection then
@@ -125,20 +131,83 @@ RunService.Heartbeat:Connect(function()
 			end
 			
 			local startTime = os.clock()
+			local teleportDone = false
+			local collisionDone = false
 			
 			postExitConnection = RunService.Heartbeat:Connect(function()
 				local currentChar = player.Character
 				if not currentChar then return end
+				local currentHrp = currentChar:FindFirstChild("HumanoidRootPart")
 				
-				if os.clock() - startTime >= 2 then
+				local elapsedTime = os.clock() - startTime
+				
+				if not teleportDone and elapsedTime >= TeleportDelay then
+					teleportDone = true
+					if currentHrp and lastSeat and VehiclesFolder then
+						local targetCar = nil
+						for _, car in ipairs(VehiclesFolder:GetChildren()) do
+							if lastSeat:IsDescendantOf(car) then
+								targetCar = car
+								break
+							end
+						end
+						
+						if not targetCar then
+							targetCar = VehiclesFolder:FindFirstChild(player.Name)
+						end
+						
+						if targetCar then
+							local bodyFolder = targetCar:FindFirstChild("Body")
+							local bodyPart = bodyFolder and bodyFolder:FindFirstChild("Body")
+							
+							if bodyPart and bodyPart:IsA("BasePart") then
+								local carCFrame = bodyPart.CFrame
+								local carSize = bodyPart.Size
+								
+								local offsetFromCenter = carCFrame:PointToObjectSpace(currentHrp.Position)
+								
+								local halfX = carSize.X * 0.5 + 2.5
+								local halfZ = carSize.Z * 0.5 + 2.5
+								
+								if math.abs(offsetFromCenter.X) <= halfX and math.abs(offsetFromCenter.Z) <= halfZ then
+									local distToX = halfX - math.abs(offsetFromCenter.X)
+									local distToZ = halfZ - math.abs(offsetFromCenter.Z)
+									
+									local newOffset
+									if distToX < distToZ then
+										local signX = offsetFromCenter.X >= 0 and 1 or -1
+										newOffset = Vector3.new(signX * halfX, offsetFromCenter.Y, offsetFromCenter.Z)
+									else
+										local signZ = offsetFromCenter.Z >= 0 and 1 or -1
+										newOffset = Vector3.new(offsetFromCenter.X, offsetFromCenter.Y, signZ * halfZ)
+									end
+									
+									local spawnPosition = carCFrame:PointToWorldSpace(newOffset)
+									local currentY = currentHrp.Position.Y
+									local finalPosition = Vector3.new(spawnPosition.X, currentY, spawnPosition.Z)
+									local lookAtTarget = Vector3.new(carCFrame.Position.X, currentY, carCFrame.Position.Z)
+									
+									currentHrp.CFrame = currentHrp.CFrame:Lerp(CFrame.new(finalPosition, lookAtTarget), 0.75)
+								end
+							end
+						end
+					end
+				end
+				
+				if not collisionDone and elapsedTime >= 2.3 then
+					collisionDone = true
+					setCharacterCollisionGroup(currentChar, "Characters")
+				end
+				
+				if teleportDone and collisionDone then
 					postExitConnection:Disconnect()
 					postExitConnection = nil
-					
-					setCharacterCollisionGroup(currentChar, "Characters")
 					return
 				end
 				
-				setCharacterCollisionGroup(currentChar, "Seated")
+				if not collisionDone then
+					setCharacterCollisionGroup(currentChar, "Seated")
+				end
 			end)
 		end
 	end
