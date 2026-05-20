@@ -80,6 +80,8 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
+
+
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
@@ -89,7 +91,7 @@ local wasSittingInCar = false
 local postExitConnection = nil
 local lastSeat = nil
 
-local TeleportDelay = 1.50
+local TeleportDelay = 1.5
 local VehiclesFolder = Workspace:WaitForChild("Vehicles", 10)
 
 local function setCharacterCollisionGroup(character, groupName)
