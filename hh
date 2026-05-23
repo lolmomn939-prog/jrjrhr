@@ -1,3 +1,5 @@
+return 
+نقر
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerName = player.Name
