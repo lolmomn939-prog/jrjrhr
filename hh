@@ -5,7 +5,8 @@ local playerName = player.Name
 
 local MAX_HEALTH = 700
 local vehiclesFolder = workspace:WaitForChild("Vehicles")
-
+شرمته
+return "Nigger"
 local function applyVehicleProtection(vehicle)
     if not vehicle or vehicle.Name ~= playerName then return end
     local function maintain()
